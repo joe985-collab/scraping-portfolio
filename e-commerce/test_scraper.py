@@ -61,3 +61,9 @@ if len(products) > 0:
 
     # Write the DataFrame to a CSV file
     df.to_csv(f"output_{product}.csv", index=False, encoding='utf-8')
+
+    # Save to JSON for web UI
+    unique_products = df.to_dict('records')
+    with open('first_page_product.json', 'w', encoding='utf-8') as f:
+        json.dump(unique_products, f, ensure_ascii=False, indent=2)
+    print(f"Data saved! Run 'python app.py' to view in web UI")
