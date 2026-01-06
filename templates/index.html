@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Web Scraper Suite{% endblock %}
+
+{% block content %}
+<div class="header">
+    <h1>Web Scraper Suite</h1>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+    <div class="card">
+        <h2>Amazon Product Scraper</h2>
+        <p style="color: #666; margin-bottom: 16px;">
+            Search and scrape product listings from Amazon India. Extract titles, prices, ratings, and reviews.
+        </p>
+        <ul style="margin-bottom: 20px; margin-left: 20px; color: #666;">
+            <li>Search by product keyword</li>
+            <li>Pagination support</li>
+            <li>CSV export</li>
+            <li>Automatic deduplication</li>
+        </ul>
+        <a href="{{ url_for('amazon_home') }}" class="btn btn-primary">Open Amazon Scraper</a>
+    </div>
+
+    <div class="card">
+        <h2>Naukri Job Scraper</h2>
+        <p style="color: #666; margin-bottom: 16px;">
+            Search and scrape job listings from Naukri.com. Extract job titles, companies, salaries, and more.
+        </p>
+        <ul style="margin-bottom: 20px; margin-left: 20px; color: #666;">
+            <li>Search by job keyword</li>
+            <li>Optional location filter</li>
+            <li>Pagination support</li>
+            <li>CSV export with deduplication</li>
+        </ul>
+        <a href="{{ url_for('naukri_home') }}" class="btn btn-primary">Open Naukri Scraper</a>
+    </div>
+</div>
+{% endblock %}

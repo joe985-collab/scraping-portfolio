@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Amazon Results{% endblock %}
+
+{% block content %}
+<div class="header">
+    <div>
+        <h1>Amazon Search Results</h1>
+        <p class="stats">{{ products|length }} products found</p>
+    </div>
+    <div style="display: flex; gap: 12px;">
+        <a href="{{ url_for('amazon_home') }}" class="btn btn-secondary">New Search</a>
+        <a href="{{ url_for('amazon_download', filename=filename) }}" class="btn btn-primary">Download CSV</a>
+    </div>
+</div>
+
+{% if products %}
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 50px;">#</th>
+                <th>Product Title</th>
+                <th style="width: 100px;">Price</th>
+                <th style="width: 80px;">Rating</th>
+                <th style="width: 100px;">Reviews</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>
+                    {% if product.product_url %}
+                    <a href="{{ product.product_url }}" target="_blank" rel="noopener" class="text-link">
+                        {{ product.title or '---' }}
+                    </a>
+                    {% else %}
+                    {{ product.title or '---' }}
+                    {% endif %}
+                </td>
+                <td style="font-weight: 600; color: #b12704;">
+                    {% if product.price %}₹{{ product.price }}{% else %}---{% endif %}
+                </td>
+                <td>
+                    {% if product.rating %}
+                    <span style="color: #ff9900;">★</span> {{ product.rating }}
+                    {% else %}
+                    <span class="text-muted">---</span>
+                    {% endif %}
+                </td>
+                <td>{{ product.reviews or '---' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="card">
+    <div class="empty-state">
+        <p>No products found in this file.</p>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Amazon Product Scraper{% endblock %}
+
+{% block content %}
+<div class="header">
+    <h1>Amazon Product Scraper</h1>
+</div>
+
+<div class="card">
+    <h2>Search Products</h2>
+    <form action="{{ url_for('amazon_search') }}" method="POST">
+        <div class="form-row">
+            <div class="form-group" style="flex: 2;">
+                <label for="query">Product Search Query</label>
+                <input type="text" class="form-control" id="query" name="query" placeholder="e.g., wireless mouse, laptop stand" required>
+            </div>
+            <div class="form-group" style="flex: 1;">
+                <label for="max_pages">Max Pages</label>
+                <input type="number" class="form-control" id="max_pages" name="max_pages" value="5" min="1" max="20">
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary" {% if status.running %}disabled{% endif %}>
+            {% if status.running %}Scraping...{% else %}Start Scraping{% endif %}
+        </button>
+    </form>
+</div>
+
+{% if status.running %}
+<div class="card">
+    <div class="status-running">
+        <div class="spinner"></div>
+        <span>Scraper is running. This page will refresh automatically...</span>
+    </div>
+</div>
+{% endif %}
+
+{% if status.error %}
+<div class="card">
+    <div class="flash error" style="margin: 0;">{{ status.error }}</div>
+</div>
+{% endif %}
+
+{% if status.filename and not status.running %}
+<div class="card">
+    <h2>Latest Results</h2>
+    <p style="margin-bottom: 16px;">Scraping completed successfully!</p>
+    <div style="display: flex; gap: 12px;">
+        <a href="{{ url_for('amazon_results', filename=status.filename) }}" class="btn btn-primary">View Results</a>
+        <a href="{{ url_for('amazon_download', filename=status.filename) }}" class="btn btn-secondary">Download CSV</a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+{% if status.running %}
+<script>
+    // Auto-refresh while scraping
+    setTimeout(function() {
+        fetch('{{ url_for("amazon_status") }}')
+            .then(r => r.json())
+            .then(data => {
+                if (!data.running) {
+                    window.location.reload();
+                } else {
+                    setTimeout(arguments.callee, 3000);
+                }
+            });
+    }, 3000);
+</script>
+{% endif %}
+{% endblock %}

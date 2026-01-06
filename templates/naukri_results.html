@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Naukri Results{% endblock %}
+
+{% block content %}
+<div class="header">
+    <div>
+        <h1>Naukri Job Results</h1>
+        <p class="stats">{{ jobs|length }} jobs found</p>
+    </div>
+    <div style="display: flex; gap: 12px;">
+        <a href="{{ url_for('naukri_home') }}" class="btn btn-secondary">New Search</a>
+        <a href="{{ url_for('naukri_download', filename=filename) }}" class="btn btn-primary">Download CSV</a>
+    </div>
+</div>
+
+{% if jobs %}
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 50px;">#</th>
+                <th>Job Title</th>
+                <th>Company</th>
+                <th style="width: 120px;">Experience</th>
+                <th>Location</th>
+                <th style="width: 120px;">Salary</th>
+                <th style="width: 100px;">Posted</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for job in jobs %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>
+                    {% if job.job_url %}
+                    <a href="{{ job.job_url }}" target="_blank" rel="noopener" class="text-link">
+                        {{ job.title or '---' }}
+                    </a>
+                    {% else %}
+                    {{ job.title or '---' }}
+                    {% endif %}
+                </td>
+                <td>{{ job.company or '---' }}</td>
+                <td>{{ job.experience or '---' }}</td>
+                <td>{{ job.location or '---' }}</td>
+                <td style="color: #2e7d32; font-weight: 500;">{{ job.salary or '---' }}</td>
+                <td class="text-muted">{{ job.posted or '---' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="card">
+    <div class="empty-state">
+        <p>No jobs found in this file.</p>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

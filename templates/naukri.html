@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Naukri Job Scraper{% endblock %}
+
+{% block content %}
+<div class="header">
+    <h1>Naukri Job Scraper</h1>
+</div>
+
+<div class="card">
+    <h2>Search Jobs</h2>
+    <form action="{{ url_for('naukri_search') }}" method="POST">
+        <div class="form-row">
+            <div class="form-group">
+                <label for="keyword">Job Keyword</label>
+                <input type="text" class="form-control" id="keyword" name="keyword" placeholder="e.g., data engineer, python developer" required>
+            </div>
+            <div class="form-group">
+                <label for="location">Location (optional)</label>
+                <input type="text" class="form-control" id="location" name="location" placeholder="e.g., bangalore, mumbai">
+            </div>
+        </div>
+        <div class="form-group" style="max-width: 200px;">
+            <label for="max_pages">Max Pages</label>
+            <input type="number" class="form-control" id="max_pages" name="max_pages" value="5" min="1" max="20">
+        </div>
+        <button type="submit" class="btn btn-primary" {% if status.running %}disabled{% endif %}>
+            {% if status.running %}Scraping...{% else %}Start Scraping{% endif %}
+        </button>
+    </form>
+</div>
+
+{% if status.running %}
+<div class="card">
+    <div class="status-running">
+        <div class="spinner"></div>
+        <span>Scraper is running. This page will refresh automatically...</span>
+    </div>
+</div>
+{% endif %}
+
+{% if status.error %}
+<div class="card">
+    <div class="flash error" style="margin: 0;">{{ status.error }}</div>
+</div>
+{% endif %}
+
+{% if status.filename and not status.running %}
+<div class="card">
+    <h2>Latest Results</h2>
+    <p style="margin-bottom: 16px;">Scraping completed successfully!</p>
+    <div style="display: flex; gap: 12px;">
+        <a href="{{ url_for('naukri_results', filename=status.filename) }}" class="btn btn-primary">View Results</a>
+        <a href="{{ url_for('naukri_download', filename=status.filename) }}" class="btn btn-secondary">Download CSV</a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+{% if status.running %}
+<script>
+    // Auto-refresh while scraping
+    setTimeout(function() {
+        fetch('{{ url_for("naukri_status") }}')
+            .then(r => r.json())
+            .then(data => {
+                if (!data.running) {
+                    window.location.reload();
+                } else {
+                    setTimeout(arguments.callee, 3000);
+                }
+            });
+    }, 3000);
+</script>
+{% endif %}
+{% endblock %}
